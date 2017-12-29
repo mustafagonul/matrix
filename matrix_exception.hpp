@@ -3,7 +3,18 @@
 #include <exception>
 
 
-class bad_matrix;
-class bad_matrix_row;
-class bad_matrix_col;
-class bad_matrix_operation;
+class bad_matrix : public std::exception {
+
+};
+
+class bad_matrix_row : public std::exception {
+
+};
+
+class bad_matrix_col : public std::exception {
+
+};
+
+class bad_matrix_operation : public std::exception {
+
+};

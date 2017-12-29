@@ -1,38 +1,52 @@
 #include "matrix.hpp"
+#include "matrix_strategy.hpp"
 
 
 template <typename Type, template <typename> typename Traits>
-auto matrix<Type, Traits>::get(row_t row, col_t col) const -> elem_t
+auto matrix<Type, Traits>::get(row_t row, col_t col) -> elem_ref_t
 {
-  return strategy_t::get(row, col);
+  return strategy_t::get(*this, row, col);
+}
+
+template <typename Type, template <typename> typename Traits>
+auto matrix<Type, Traits>::get(row_t row, col_t col) const -> elem_cref_t
+{
+  return strategy_t::get(*this, row, col);
 }
 
 template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::get(row_t r1, col_t c1, row_t r2, col_t c2) const -> matrix_t
 {
-  size_t row = r2 - r1;
-  size_t col = c2 - c1;
+  size_t row = r2 - r1; // TODO mustafa: 
+  size_t col = c2 - c1; // TODO mustafa: 
   matrix_t matrix{row, col};
 
+  for (row_t i = 0; i < row; ++i) {
+    for (col_t j = 0; j < col; ++j) {
+      matrix.get(i, j) = get(i + r1, j + c1);
+    }
+  }
+
+  return matrix;
 }
 
 template <typename Type, template <typename> typename Traits>
-auto matrix<Type, Traits>::set(row_t row, col_t col, elem_cref_t elem) -> void;
+auto matrix<Type, Traits>::set(row_t row, col_t col, elem_cref_t elem) -> void
 {
-  strategy_t::set(row, col, elem);
+  strategy_t::set(*this, row, col, elem);
 }
 
 template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::set(row_t r, col_t c, matrix_cref_t matrix) -> void
 {
   if (r + matrix.row() >= row())
-    throw bad_matrix_row;
+    throw bad_matrix_row{};
 
   if (c + matrix.col() >= col())
-    throw bad_matrix_col;
+    throw bad_matrix_col{};
 
-  for (size_t i = 0; i < matrix.row(); ++i) {
-    for (size_t j = 0; j < matrix.col(); ++j) {
+  for (row_t i = 0; i < matrix.row(); ++i) {
+    for (col_t j = 0; j < matrix.col(); ++j) {
       auto elem = matrix.get(i, j);
       set(i + r, j + c, elem);
     }
@@ -43,13 +57,13 @@ template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::add(matrix_cref_t matrix) -> void
 {
   if (row() != matrix.row())
-    throw bad_matrix_row;
+    throw bad_matrix_row{};
 
-  if (col != matrix.col())
-    throw bad_matrix_col;
+  if (col() != matrix.col())
+    throw bad_matrix_col{};
 
-  for (size_t i = 0; i < matrix.row(); ++i) {
-    for (size_t j = 0; j < matrix.col(); ++j) {
+  for (row_t i = 0; i < matrix.row(); ++i) {
+    for (col_t j = 0; j < matrix.col(); ++j) {
       get(i, j) += matrix.get(i, j);
     }
   }
@@ -59,13 +73,13 @@ template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::sub(matrix_cref_t matrix) -> void
 {
   if (row() != matrix.row())
-    throw bad_matrix_row;
+    throw bad_matrix_row{};
 
-  if (col != matrix.col())
-    throw bad_matrix_col;
+  if (col() != matrix.col())
+    throw bad_matrix_col{};
 
-  for (size_t i = 0; i < matrix.row(); ++i) {
-    for (size_t j = 0; j < matrix.col(); ++j) {
+  for (row_t i = 0; i < matrix.row(); ++i) {
+    for (col_t j = 0; j < matrix.col(); ++j) {
       get(i, j) -= matrix.get(i, j);
     }
   }
@@ -74,8 +88,8 @@ auto matrix<Type, Traits>::sub(matrix_cref_t matrix) -> void
 template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::mul(elem_t elem) -> void
 {
-  for (size_t i = 0; i < matrix.row(); ++i) {
-    for (size_t j = 0; j < matrix.col(); ++j) {
+  for (row_t i = 0; i < row(); ++i) {
+    for (col_t j = 0; j < col(); ++j) {
       get(i, j) *= elem;
     }
   }
@@ -86,20 +100,20 @@ template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::dot(matrix_cref_t matrix) const -> matrix_t
 {
   if (col() != matrix.row())
-    throw bad_matrix_operation;
+    throw bad_matrix_operation{};
 
-  auto row = row();
-  auto idx = col();
-  auto col = matrix.col();
+  auto rw = row();
+  auto ix = col();
+  auto cl = matrix.col();
 
-  matrix_t result;
+  matrix_t result{rw, cl};
   
 
-  for (size_t i = 0; i < row; ++i) {
-    for (size_t j = 0; j < col; ++j) {
+  for (row_t i = 0; i < rw; ++i) {
+    for (col_t j = 0; j < cl; ++j) {
       elem_t elem{};
 
-      for (size_t k = 0; k < idx; ++k) {
+      for (size_t k = 0; k < ix; ++k) {
         elem += get(i, k) * matrix.get(k, j);
       }
 
@@ -115,8 +129,8 @@ auto matrix<Type, Traits>::tr() const -> matrix_t
 {
   matrix_t matrix(col(), row());
 
-  for (size_t i = 0; i < col(); ++i) {
-    for (size_t j = 0; j < row(); ++j) {
+  for (row_t i = 0; i < col(); ++i) {
+    for (col_t j = 0; j < row(); ++j) {
       matrix.get(j, i) = matrix.get(i, j);
     }
   }

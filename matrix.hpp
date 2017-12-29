@@ -12,6 +12,7 @@ public:
   matrix(row_t, col_t, elem_t = elem_t{});
 
 public:
+  auto get(row_t, col_t) -> elem_ref_t;
   auto get(row_t, col_t) const -> elem_cref_t;
   auto get(row_t, col_t, row_t, col_t) const -> matrix_t;
   
@@ -24,11 +25,11 @@ public:
   auto dot(matrix_cref_t) const -> matrix_t;
   auto tr() const -> matrix_t;
 
-  auto row() const -> row_t noexcept { return m_row; }
-  auto col() const -> col_t noexcept { return m_col; }
+  auto row() const noexcept -> row_t { return m_row; }
+  auto col() const noexcept -> col_t { return m_col; }
 
 private:
-  auto imp() const -> imp_t noexcept { return m_imp; }
+  auto imp() const noexcept -> imp_t { return m_imp; }
 
 private:
   row_t m_row;
