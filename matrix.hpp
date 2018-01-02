@@ -1,6 +1,8 @@
 #pragma once
 
 #include "matrix_traits.hpp"
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 
 
 template <typename Type, template <typename> typename Traits = matrix_traits>
@@ -30,6 +32,13 @@ public:
 
 private:
   auto imp() const noexcept -> imp_t { return m_imp; }
+
+private:
+  friend class boost::serialization::access;
+  template <typename Archive>
+  void serialize(Archive & ar, const unsigned int /* file_version */) {
+      ar & m_row & m_col & m_imp;
+  }
 
 private:
   row_t m_row;
