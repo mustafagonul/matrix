@@ -1,12 +1,28 @@
 #include "matrix.hpp"
 #include "matrix_strategy.hpp"
 
+template <typename Type, template <typename> typename Traits>
+auto matrix<Type, Traits>::matrix(row_t row, col_t col, elem_t elem = elem_t{})
+  : m_row{row}
+  , m_col{col}
+  , m_imp(row * col, elem)
+{
+}
+
+template <typename Type, template <typename> typename Traits>
+auto matrix<Type, Traits>::matrix(std::initializer_list<elem_t> l)
+  : m_row{1}
+  , m_col{l.size()}
+  , m_imp{l}
+{
+}
 
 template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::get(row_t row, col_t col) -> elem_ref_t
 {
   return strategy_t::get(*this, row, col);
 }
+
 
 template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::get(row_t row, col_t col) const -> elem_cref_t
