@@ -16,6 +16,7 @@ public:
   using row_t = size_t;
   using col_t = size_t;
   using imp_t = std::vector<type_t>;
+  using imp_cref_t = imp_t const&;
 };
 
 #define MATRIX_DEFINE_INTERNAL_TYPES()                \
@@ -30,7 +31,8 @@ public:
   using elem_t = typename traits_t::elem_t;           \
   using elem_ref_t = typename traits_t::elem_ref_t;   \
   using elem_cref_t = typename traits_t::elem_cref_t; \
-  using imp_t  = typename traits_t::imp_t;
+  using imp_t  = typename traits_t::imp_t;            \
+  using imp_cref_t = typename traits_t::imp_cref_t;
 
 
 #define MATRIX_DEFINE()                 \

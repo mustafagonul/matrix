@@ -1,8 +1,9 @@
 #include "matrix.hpp"
 #include "matrix_strategy.hpp"
+#include <algorithm>
 
 template <typename Type, template <typename> typename Traits>
-auto matrix<Type, Traits>::matrix(row_t row, col_t col, elem_t elem = elem_t{})
+matrix<Type, Traits>::matrix(row_t row, col_t col, elem_t elem)
   : m_row{row}
   , m_col{col}
   , m_imp(row * col, elem)
@@ -10,11 +11,28 @@ auto matrix<Type, Traits>::matrix(row_t row, col_t col, elem_t elem = elem_t{})
 }
 
 template <typename Type, template <typename> typename Traits>
-auto matrix<Type, Traits>::matrix(std::initializer_list<elem_t> l)
+matrix<Type, Traits>::matrix(std::initializer_list<elem_t> const& l)
   : m_row{1}
   , m_col{l.size()}
   , m_imp{l}
 {
+}
+
+template <typename Type, template <typename> typename Traits>
+matrix<Type, Traits>::matrix(row_t row, col_t col, imp_cref_t imp)
+  : m_row{row}
+  , m_col{col}
+  , m_imp(imp)
+{
+}
+
+template <typename Type, template <typename> typename Traits>
+matrix<Type, Traits>::matrix(row_t row, col_t col, imp_cref_t imp1, imp_cref_t imp2)
+  : m_row{row}
+  , m_col{col}
+  , m_imp(imp1)
+{
+  std::copy(imp2.begin(), imp2.end(), std::back_inserter(m_imp));
 }
 
 template <typename Type, template <typename> typename Traits>
@@ -35,7 +53,7 @@ auto matrix<Type, Traits>::get(row_t r1, col_t c1, row_t r2, col_t c2) const -> 
 {
   size_t row = r2 - r1; // TODO mustafa: 
   size_t col = c2 - c1; // TODO mustafa: 
-  matrix_t matrix{row, col};
+  matrix_t matrix(row, col);
 
   for (row_t i = 0; i < row; ++i) {
     for (col_t j = 0; j < col; ++j) {
@@ -111,7 +129,6 @@ auto matrix<Type, Traits>::mul(elem_t elem) -> void
   }
 }
 
-
 template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::dot(matrix_cref_t matrix) const -> matrix_t
 {
@@ -122,9 +139,8 @@ auto matrix<Type, Traits>::dot(matrix_cref_t matrix) const -> matrix_t
   auto ix = col();
   auto cl = matrix.col();
 
-  matrix_t result{rw, cl};
+  matrix_t result(rw, cl);
   
-
   for (row_t i = 0; i < rw; ++i) {
     for (col_t j = 0; j < cl; ++j) {
       elem_t elem{};
@@ -141,7 +157,7 @@ auto matrix<Type, Traits>::dot(matrix_cref_t matrix) const -> matrix_t
 }
 
 template <typename Type, template <typename> typename Traits>
-auto matrix<Type, Traits>::tr() const -> matrix_t
+auto matrix<Type, Traits>::transpose() const -> matrix_t
 {
   matrix_t matrix(col(), row());
 
@@ -152,6 +168,34 @@ auto matrix<Type, Traits>::tr() const -> matrix_t
   }
 
   return matrix;
+}
+
+template <typename Type, template <typename> typename Traits>
+auto matrix<Type, Traits>::vstack(matrix_cref_t cref) const -> matrix_t
+{
+  if (col() != cref.col())
+    throw bad_matrix_col{};
+
+  auto rw = row() + cref.row();
+  auto cl = col();
+
+  return matrix_t(rw, cl, m_imp, cref.m_imp);
+}
+
+template <typename Type, template <typename> typename Traits>
+auto matrix<Type, Traits>::hstack(matrix_cref_t ref) const -> matrix_t
+{
+  if (row() != ref.row())
+    throw bad_matrix_row{};
+
+  auto t1 = transpose();
+  auto t2 = ref.transpose();
+
+  return t1.vstack(t2).transpose();
+  
+  // auto sm = t1.vstack(t2);
+  // auto tm = sm.transpose();
+  // return tm;
 }
 
 
