@@ -33,6 +33,7 @@ public:
   auto dot(matrix_cref_t) const -> matrix_t;
   
   auto transpose() const -> matrix_t;
+  bool equal(matrix_cref_t) const noexcept;
 
   /*
   template <type_t... Pack>

@@ -171,6 +171,25 @@ auto matrix<Type, Traits>::transpose() const -> matrix_t
 }
 
 template <typename Type, template <typename> typename Traits>
+bool matrix<Type, Traits>::equal(matrix_cref_t m) const noexcept
+{
+  if (row() != m.row())
+    return false;
+
+  if (col() != m.col())
+    return false;
+
+  for (row_t i = 0; i < row(); ++i) {
+    for (col_t j = 0; j < col(); ++j) {
+      if (get(i, j) != m.get(i, j))
+        return false;
+    }
+  }
+
+  return true;
+}
+
+template <typename Type, template <typename> typename Traits>
 auto matrix<Type, Traits>::vstack(matrix_cref_t cref) const -> matrix_t
 {
   if (col() != cref.col())
@@ -191,11 +210,11 @@ auto matrix<Type, Traits>::hstack(matrix_cref_t ref) const -> matrix_t
   auto t1 = transpose();
   auto t2 = ref.transpose();
 
-  return t1.vstack(t2).transpose();
-  
   // auto sm = t1.vstack(t2);
   // auto tm = sm.transpose();
   // return tm;
+
+  return t1.vstack(t2).transpose();
 }
 
 
