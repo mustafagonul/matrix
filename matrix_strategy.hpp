@@ -14,13 +14,21 @@ struct matrix_strategy {
   static auto get(matrix_cref_t matrix, row_t row, col_t col) -> elem_cref_t {
     auto i = index(matrix, row, col);
 
+  #ifdef NDEBUG
     return matrix.m_imp[i];
+  #else
+    return matrix.m_imp.at(i);
+  #endif
   }
 
   static auto get(matrix_ref_t matrix, row_t row, col_t col) -> elem_ref_t {
     auto i = index(matrix, row, col);
 
+  #ifdef NDEBUG
     return matrix.m_imp[i];
+  #else
+    return matrix.m_imp.at(i);
+  #endif
   }
 
   static void set(matrix_ref_t matrix, row_t row, col_t col, elem_cref_t elem) {

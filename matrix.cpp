@@ -53,6 +53,11 @@ auto matrix<Type, Traits>::get(row_t r1, col_t c1, row_t r2, col_t c2) const -> 
 {
   size_t row = r2 - r1; // TODO mustafa: 
   size_t col = c2 - c1; // TODO mustafa: 
+  if (row < 0)
+    throw bad_matrix{};
+  if (col < 0)
+    throw bad_matrix{};
+
   matrix_t matrix(row, col);
 
   for (row_t i = 0; i < row; ++i) {
