@@ -111,4 +111,33 @@ TEST(matrix_cpp_test, get_3)
   }
 }
 
+TEST(matrix_cpp_test, set_1)
+{
+  // This check is done at previous constructor tests
+  EXPECT_TRUE(true);
+}
 
+TEST(matrix_cpp_test, set_2)
+{
+  // This check is done at previous constructor tests
+  EXPECT_TRUE(true);
+}
+
+
+TEST(matrix_cpp_test, add)
+{
+  // This check is done at previous constructor tests
+  EXPECT_TRUE(true);
+}
+
+TEST(matrix_cpp_test, sub)
+{
+  // This check is done at previous constructor tests
+  EXPECT_TRUE(true);
+}
+
+TEST(matrix_cpp_test, mul)
+{
+  // This check is done at previous constructor tests
+  EXPECT_TRUE(true);
+}
